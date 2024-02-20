@@ -1,7 +1,7 @@
 import java.time.temporal.ChronoUnit;
 
 public class MediScore {
-    public int[] calculate(Patient p){
+    public static int[] calculate(Patient p){
         int mediScore = 0;
         int respType = p.getRespType();
         int respRate = p.getRespRate();
@@ -16,6 +16,7 @@ public class MediScore {
             //Set consciousness and respiration type
             scores[0]=respType;
             scores[1]=consciousness;
+
             //Set respiration rate score
             if (respRate<=8 || respRate>=25){
                 scores[2] = 3;
@@ -24,6 +25,7 @@ public class MediScore {
             } else if (respRate<12) {
                 scores[2] = 1;
             }
+
             //Set spo2 score
             if (spo2 <= 83) {
                 scores[3] = 3;
@@ -43,6 +45,7 @@ public class MediScore {
                     }
                 }
             }
+
             //Set temperature score
             if (temp<=35.0){
                 scores[4]= 3;
