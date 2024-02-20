@@ -6,7 +6,8 @@ This solution uses a single class with a method that takes the observations and 
 
 This would have made it easier to create multiple patients with room for other information about the patient. However, creating methods that are not intrinsic properties of the class seemed to break the single responsibility principle, which is why I decided to create a separate program with 2 separate classes.
 
-I still had to store information in the class to allow for comparison with previous results. I considered other methods such as: 
+I still had to store information in the class to allow for comparison with previous results. I considered other methods such as:
+
 making another method that takes 3 parameters (previous time, previous score and the return from the original method), to raise a flag 
 
 using the same method but with optional parameters
