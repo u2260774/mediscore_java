@@ -61,10 +61,14 @@ public class MediScore {
     public int calculateMediScore(respTypeValue respType, consciousnessType consc, int respRate, int spo2, float temp, float cbg, int timeSinceMeal)
 ```
 
-### Flag, Respiration type and consciousness. Beginning of try block.
+### Reset Flag and mediScore. 
 ```bash
 {
+        mediScore = 0;
         attentionRequired=false;
+```
+### Begin try block and set Respiration type and consciousness score.
+```bash
         try {
             //Set consciousness and respiration type
             mediScore +=respType.value;
