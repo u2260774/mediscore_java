@@ -23,6 +23,7 @@ public class MediScore {
     private int mediScore =0;
     private int prevScore = -1;
     public int calculateMediScore(respTypeValue respType, consciousnessType consc, int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
+        mediScore = 0;
         attentionRequired=false;
         try {
             //Set consciousness and respiration type
