@@ -20,7 +20,6 @@ public class MediScore {
         }
     }
     private boolean attentionRequired = false;
-    private String error;
     private int mediScore =0;
     private int prevScore = -1;
     public int calculateMediScore(respTypeValue respType, consciousnessType consc, int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
@@ -31,8 +30,7 @@ public class MediScore {
             mediScore +=consc.value;
             //Set respiration rate
             if (respRate<0){
-                error="Respiratory rate can not be less than 0 (time travellers excluded)";
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Respiratory rate can not be less than 0 (time travellers excluded)");
             }
             if (respRate<=8 || respRate>=25){
                 mediScore += 3;
@@ -43,8 +41,7 @@ public class MediScore {
             }
             //Set temperature
             if (temp>48.0 || temp<12.0){
-                error="Temperature must be in Celsius";
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Temperature must be in Celsius");
             }
             temp = (float) (Math.round(temp * 10.0) / 10.0);
             if (temp<=35.0){
@@ -55,8 +52,7 @@ public class MediScore {
                 mediScore += 2;
             }
             if (spo2 > 100 || spo2 < 0) {
-                error = "SpO2 range: 0-100";
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("SpO2 range: 0-100");
             }
             //Set spo2
             if (spo2 <= 83) {
@@ -78,8 +74,7 @@ public class MediScore {
             }
             //Set CBG
             if (cbg < 0 || timeSinceMeal < 0){
-                error="Time since meal or CBG can not be negative (time travellers excluded)";
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Time since meal or CBG can not be negative (time travellers excluded)");
             }
             if (timeSinceMeal>2){
                 if(cbg<=3.4||cbg>=6.0){
@@ -95,8 +90,7 @@ public class MediScore {
                 }
             }
         } catch (Exception e){
-            error=error+". Values unchanged.";
-            throw new RuntimeException();
+            throw new RuntimeException(e.getMessage()+". Values unchanged.");
         }
         if (prevScore!=-1){
             if (mediScore-prevScore>=2) {
@@ -112,8 +106,5 @@ public class MediScore {
 
     public boolean isAttentionRequired() {
         return attentionRequired;
-    }
-    public String getError(){
-        return error;
     }
 }
