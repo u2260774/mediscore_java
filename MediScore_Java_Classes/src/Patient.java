@@ -1,10 +1,7 @@
 import java.time.LocalDateTime;
 
 public class Patient {
-    private int prevScore = -1;
-    private LocalDateTime currTime = LocalDateTime.now();
-    private LocalDateTime prevTime = LocalDateTime.now();
-    private int[] individualScores = {0,0,0,0,0,0};
+
     public enum consciousnessTypeValue{
         ALERT(0),
         CVPU(3);
@@ -13,7 +10,6 @@ public class Patient {
             this.value=value;
         }
     }
-    private int consciousnessType=0;
     public enum respTypeValue{
         AIR(0),
         OXYGEN(2);
@@ -22,7 +18,12 @@ public class Patient {
             this.value=value;
         }
     }
+    private int consciousnessType=0;
     private int respType=0;
+    private int prevScore = -1;
+    private LocalDateTime currTime = LocalDateTime.now();
+    private LocalDateTime prevTime = LocalDateTime.now();
+    private int[] individualScores = {0,0,0,0,0,0};
     private int respRate=15;
     private int spo2=95;
     private float temp=37.1f;
