@@ -19,7 +19,7 @@ public class Main {
 ```
 ### Output
 
-![java_simple output](/MediScore+Java_Simple/src/java_simple.png?raw=true)
+![java_simple output](/MediScore_Java_Simple/src/java_simple.png?raw=true)
 
 ## MediScore.java
 
