@@ -7,7 +7,7 @@ public class Main {
             System.out.println(mediScore.calculateMediScore(MediScore.respTypeValue.OXYGEN, MediScore.consciousnessType.CVPU, 15, 95, 37.12f, 7.9f, 1));
             System.out.println(mediScore.isAttentionRequired());
         } catch (Exception e){
-            System.out.println(mediScore.getError());
+            System.out.println(e.getMessage());
         }
     }
 }
