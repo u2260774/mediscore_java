@@ -13,11 +13,9 @@ public class MediScore {
         int prevScore = p.getPrevScore();
         int flag = 0;
         int[] scores = {0,0,0,0,0,0};
-        try {
             //Set consciousness and respiration type
             scores[0]=respType;
             scores[1]=consciousness;
-
             //Set respiration rate score
             if (respRate<=8 || respRate>=25){
                 scores[2] = 3;
@@ -26,7 +24,6 @@ public class MediScore {
             } else if (respRate<12) {
                 scores[2] = 1;
             }
-
             //Set spo2 score
             if (spo2 <= 83) {
                 scores[3] = 3;
@@ -46,7 +43,6 @@ public class MediScore {
                     }
                 }
             }
-
             //Set temperature score
             if (temp<=35.0){
                 scores[4]= 3;
@@ -69,9 +65,6 @@ public class MediScore {
                     scores[5]= 2;
                 }
             }
-        } catch (Exception e){
-            throw new IllegalArgumentException(e.getMessage());
-        }
         for (int i : scores){
             mediScore+=i;
         }
