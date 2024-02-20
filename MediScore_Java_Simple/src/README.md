@@ -1,5 +1,7 @@
 ## Main
 
+Runs MediScore.java and displays mediscore or error
+
 ```bash
 public class Main {
     public static void main(String[] args) {
@@ -18,10 +20,15 @@ public class Main {
 
 ## MediScore.java
 
+### Imports
+
 ```bash
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+```
+### Class and Enums
 
+```bash
 public class MediScore {
     private LocalDateTime time = LocalDateTime.now();
     public enum respTypeValue{
@@ -40,15 +47,31 @@ public class MediScore {
             this.value=value;
         }
     }
+```
+### Variables
+
+```bash
     private boolean attentionRequired = false;
     private int mediScore =0;
     private int prevScore = -1;
-    public int calculateMediScore(respTypeValue respType, consciousnessType consc, int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
+```
+
+### Method Parameters
+```bash
+    public int calculateMediScore(respTypeValue respType, consciousnessType consc, int respRate, int spo2, float temp, float cbg, int timeSinceMeal)
+```
+
+### Flag, Respiration type and consciousness. Beginning of try block.
+```bash
+{
         attentionRequired=false;
         try {
             //Set consciousness and respiration type
             mediScore +=respType.value;
             mediScore +=consc.value;
+```
+### Respiration rate score
+```bash
             //Set respiration rate
             if (respRate<0){
                 throw new IllegalArgumentException("Respiratory rate can not be less than 0 (time travellers excluded)");
@@ -60,6 +83,10 @@ public class MediScore {
             } else if (respRate<12) {
                 mediScore += 1;
             }
+```
+
+### Temperature score
+```bash
             //Set temperature
             if (temp>48.0 || temp<12.0){
                 throw new IllegalArgumentException("Temperature must be in Celsius");
@@ -75,6 +102,9 @@ public class MediScore {
             if (spo2 > 100 || spo2 < 0) {
                 throw new IllegalArgumentException("SpO2 range: 0-100");
             }
+```
+### SpO2 score
+```bash
             //Set spo2
             if (spo2 <= 83) {
                 mediScore += 3;
@@ -93,6 +123,9 @@ public class MediScore {
                     }
                 }
             }
+```
+### CBG score
+```bash
             //Set CBG
             if (cbg < 0 || timeSinceMeal < 0){
                 throw new IllegalArgumentException("Time since meal or CBG can not be negative (time travellers excluded)");
@@ -113,6 +146,9 @@ public class MediScore {
         } catch (Exception e){
             throw new RuntimeException(e.getMessage()+". Values unchanged.");
         }
+```
+### Check increase in score over time
+```bash
         if (prevScore!=-1){
             if (mediScore-prevScore>=2) {
                 if (ChronoUnit.HOURS.between(time, LocalDateTime.now()) <= 24) {
@@ -120,11 +156,17 @@ public class MediScore {
                 }
             }
         }
+```
+### Change values
+```bash
         prevScore=mediScore;
         time = LocalDateTime.now();
         return mediScore;
     }
+```
 
+### Flag method
+```bash
     public boolean isAttentionRequired() {
         return attentionRequired;
     }
