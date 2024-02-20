@@ -2,7 +2,7 @@
 
 ## MediScore_Java_Simple
 
-This solution uses a single class with one method, that takes the observations and uses the LocalDateTime class to measure the time between observations. It only returns the mediscore and the flag.
+This solution uses a single class with a method that takes the observations and uses the LocalDateTime class to measure the time between observations. It only returns the mediscore and the flag.
 
 ## MediScore_Java_Classes
 
