@@ -2,7 +2,7 @@
 
 Uses the MediScore and Patient class and gives output
 
-```bash
+```java
 import java.util.Arrays;
 
 public class Main {
@@ -42,12 +42,12 @@ public class Main {
 
 ### Imports
 
-```bash
+```java
 import java.time.LocalDateTime;
 ```
 ### Class and Enums
 
-```bash
+```java
 public class Patient {
 
     public enum consciousnessTypeValue{
@@ -69,7 +69,7 @@ public class Patient {
 ```
 ### Variables
 
-```bash
+```java
     private int consciousnessType=0;
     private int respType=0;
     private int prevScore = -1;
@@ -85,7 +85,7 @@ public class Patient {
 ```
 
 ### setAll() method
-```bash
+```java
     public void setAll(respTypeValue rType, consciousnessTypeValue cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
         int currResp = this.respRate;
         int currSpo2 = this.spo2;
@@ -114,13 +114,13 @@ public class Patient {
 ```
 
 ### Default Constructor
-```bash
+```java
 {
    Patient(){
     }
 ```
 ### Getters and setters
-```bash
+```java
             public void setRespRate(int respRate) {
         if (respRate>=0){
             this.respRate=respRate;
@@ -203,7 +203,7 @@ public class Patient {
     }
 ```
 ### toString() method
-```bash
+```java
   @Override
     public String toString() {
         String warning = "";
@@ -224,12 +224,12 @@ public class Patient {
 
 ### Imports
 
-```bash
+```java
 import java.time.temporal.ChronoUnit;
 ```
 
 ### Class, Method and Variables
-```bash
+```java
 public class MediScore {
     public int[] calculate(Patient p){
         int mediScore = 0;
@@ -245,13 +245,13 @@ public class MediScore {
         int[] scores = {0,0,0,0,0,0};
 ```
 ### Inserting respiration and consciousness into the scores array
-```bash
+```java
             //Set consciousness and respiration type
             scores[0]=respType;
             scores[1]=consciousness;
 ```
 ### Inserting Respiration Rate score
-```bash
+```java
             //Set respiration rate score
             if (respRate<=8 || respRate>=25){
                 scores[2] = 3;
@@ -262,7 +262,7 @@ public class MediScore {
             }
 ```
 ### Inserting SpO2 score increase in score over time
-```bash
+```java
         if (spo2 <= 83) {
                 scores[3] = 3;
             } else if (spo2 <= 85) {
@@ -283,7 +283,7 @@ public class MediScore {
             }
 ```
 ### Inserting temperature score
-```bash
+```java
             //Set temperature score
             if (temp<=35.0){
                 scores[4]= 3;
@@ -294,7 +294,7 @@ public class MediScore {
             }
 ```
 ### Inserting CBG score
-```bash
+```java
             if (timeSinceMeal>2){
                 if(cbg<=3.4||cbg>=6.0){
                     scores[5]= 3;
@@ -310,13 +310,13 @@ public class MediScore {
             }
 ```
 ### Adding scores
-```bash
+```java
         for (int i : scores){
             mediScore+=i;
         }
 ```
 ### Comparing to previous score
-```bash
+```java
        //Check if previous score is set
         if (prevScore!=-1){
             if (mediScore-prevScore>=2) {
@@ -327,7 +327,7 @@ public class MediScore {
         }
 ```
 ### Setting patient variables and returning
-```bash
+```java
         //set patient scores
         p.setScores(scores);
         //raise flag
