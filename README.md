@@ -18,6 +18,54 @@ However, I decided that I liked the automation/convenience factor of this method
 
 ## MediScore_Java_Classes
 
-This program has 2 classes, a patient class and a mediscore class (with a static method, which will be used for the calculations). The patient class also has a toString method to display the patients condition, and if the patients condition is worsening.
+This program has 2 classes, a patient class and a mediscore class (with a static method, which will be used for the calculations).
+
+The MediScore class has a static calculate() method which takes input and converts it into a score using the table. It returns the results in an array.
+
+### MediScore.calculate(...)
+```java
+    public static int[] calculate(int respType, int conscType, int respRate, float temp, int spo2, float cbg, int timeSinceMeal)
+    {...}
+    return new int[]{respRate,spo2,tempScore,cbgScore,mediScore};
+```
+
+The patient class uses the setAll() method to take input, then uses the MediScore.calculate() method to get the scores, check how the patients condition changed, and stores the individual scores in an array and the mediscore in a variable. The patient class also has a toString() method to display the patients condition, and if the patients condition is worsening.
+
+### setAll(...)
+```java
+    public void setAll(respTypeValue rType, consciousnessTypeValue cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal)
+    {...}
+        int[] scores = MediScore.calculate(respType.value,cType.value,respRate,temp,spo2,cbg,timeSinceMeal);
+        indScores[0] = scores[0];
+        indScores[1] = scores[1];
+        indScores[2] = scores[2];
+        indScores[3] = scores[3];
+
+        if (mediScore!=-1) {
+            flag = ChronoUnit.HOURS.between(prevTime, LocalDateTime.now()) <= 24 && (scores[4] - mediScore) > 2;
+        }
+
+        this.prevTime = LocalDateTime.now();
+
+        mediScore = scores[4];
+```
+
+### toString()
+```java
+    @Override
+    public String toString() {
+        String warning = "";
+        if (flag){
+            warning="\nThe patient's condition is worsening quickly.";
+        }
+        return "\n\nRespiration\nObservation: "+respType.type+"\nScore: "+respType.value+
+                "\n\nConsciousness\nObservation: "+consciousnessType.type+"\nScore: "+consciousnessType.value+
+                "\n\nRespiration Rate\nObservation: "+respRate+"\nScore: "+ indScores[0]+
+                "\n\nSpO2\nObservation: "+spo2+"\nScore: "+ indScores[1]+
+                "\n\nTemperature\nObservation: "+temp+"\nScore: "+ indScores[2]+
+                "\n\nCBG\nObservation: "+cbg+"\nScore: "+ indScores[3]+
+                "\n\nThe patient's final Medi score is "+ mediScore +warning;
+    }
+```
 
 Instead of creating separate variables to store the scores of each observation, I decided to use an array, which made it easier to set the individual scores in the patient class (for use in the toString() method). 
