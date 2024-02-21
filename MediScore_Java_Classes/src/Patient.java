@@ -35,7 +35,7 @@ public class Patient {
     private float temp = 0;
     private float cbg = 0;
     private boolean flag = false;
-    public void setAll(respTypeValue rType, consciousnessTypeValue cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
+    public void setAll(int rType, int cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
         // store previous values
         respTypeValue prevRType = this.respType;
         consciousnessTypeValue prevCType = this.consciousnessType;
@@ -45,8 +45,8 @@ public class Patient {
         float prevCbg = this.cbg;
         // begin try block to check for errors
         try {
-            this.respType = rType;
-            this.consciousnessType = cType;
+            setRespType(rType);
+            setConsciousnessType(cType);
             setRespRate(respRate);
             setSpo2(spo2);
             setTemp(temp);
@@ -63,7 +63,7 @@ public class Patient {
             throw new IllegalArgumentException(e.getMessage()+" Values unchanged.");
         }
         // start calculations and store return
-        int[] scores = MediScore.calculate(respType.value,cType.value,respRate,temp,spo2,cbg,timeSinceMeal);
+        int[] scores = MediScore.calculate(respType.value, consciousnessType.value, respRate,temp,spo2,cbg,timeSinceMeal);
         // set individual scores
         indScores[0] = scores[0];
         indScores[1] = scores[1];
@@ -77,6 +77,23 @@ public class Patient {
         this.prevTime = LocalDateTime.now();
         // set mediscore
         mediScore =scores[4];
+    }
+
+    public void setRespType(int rType){
+        if (rType==0){
+            this.respType=respTypeValue.AIR;
+        } else if (rType==2) {
+            this.respType=respTypeValue.OXYGEN;
+        } else {
+            throw new IllegalArgumentException("Respiration type must be either Air(0) or Oxygen(2).");
+        }
+    }
+    public void setConsciousnessType(int cType){
+        if (cType==0){
+            this.consciousnessType=consciousnessTypeValue.ALERT;
+        } else {
+            this.consciousnessType=consciousnessTypeValue.CVPU;
+        }
     }
 
     public void setRespRate(int respRate) {
