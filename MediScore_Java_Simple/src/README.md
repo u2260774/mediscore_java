@@ -33,7 +33,6 @@ import java.time.temporal.ChronoUnit;
 
 ```java
 public class MediScore {
-    private LocalDateTime time = LocalDateTime.now();
     public enum respTypeValue{
         AIR(0),
         OXYGEN(2);
@@ -54,8 +53,9 @@ public class MediScore {
 ### Variables
 
 ```java
+    private LocalDateTime time = LocalDateTime.now();
     private boolean attentionRequired = false;
-    private int mediScore =0;
+    private int mediScore = 0;
     private int prevScore = -1;
 ```
 
@@ -144,7 +144,7 @@ public class MediScore {
                     mediScore += 2;
                 }
             } else if (timeSinceMeal>0) {
-                if(cbg<=4.5||cbg>=9.0){
+                if(cbg<=4.4||cbg>=9.0){
                     mediScore += 3;
                 } else if ((cbg>=4.5)||(cbg>=7.9)) {
                     mediScore += 2;
