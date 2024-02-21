@@ -14,7 +14,7 @@ using the same method but with optional parameters
 
 adding 2 more parameters to the method, where a negative value in both previous time and previous score would indicate the first measurement
 
-However, I decided that I liked the automation/convenience factor of this method, and moved on to work on the 2 class version and the python version.
+However, I decided to keep it this way since I liked the automation/convenience factor of this method, and moved on to work on the 2 class version and the python version.
 
 ## MediScore_Java_Classes
 
