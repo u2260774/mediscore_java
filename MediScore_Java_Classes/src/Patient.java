@@ -29,35 +29,54 @@ public class Patient {
     private respTypeValue respType = respTypeValue.OXYGEN;
     private int mediScore = -1;
     private LocalDateTime prevTime = LocalDateTime.now();
-    private final int[] individualScores = {0,0,0,0};
+    private final int[] indScores = {0,0,0,0};
     private int respRate = 0;
     private int spo2 = 0;
     private float temp = 0;
     private float cbg = 0;
     private boolean flag = false;
     public void setAll(respTypeValue rType, consciousnessTypeValue cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
-        flag=false;
-        this.respType = rType;
-        this.consciousnessType = cType;
+        // store previous values
+        respTypeValue prevRType = this.respType;
+        consciousnessTypeValue prevCType = this.consciousnessType;
+        int prevRespRate = this.respRate;
+        int prevSpo2= this.spo2;
+        float prevTemp = this.temp;
+        float prevCbg = this.cbg;
+        // begin try block to check for errors
         try {
+            this.respType = rType;
+            this.consciousnessType = cType;
             setRespRate(respRate);
             setSpo2(spo2);
             setTemp(temp);
             setCbg(cbg);
             verifyTimeSinceMeal(timeSinceMeal);
+            // catch error, reset values and return error
         } catch (Exception e) {
+            this.respType=prevRType;
+            this.consciousnessType=prevCType;
+            this.respRate=prevRespRate;
+            this.spo2=prevSpo2;
+            this.temp=prevTemp;
+            this.cbg=prevCbg;
             throw new IllegalArgumentException(e.getMessage()+" Values unchanged.");
         }
+        // start calculations and store return
         int[] scores = MediScore.calculate(respType.value,cType.value,respRate,temp,spo2,cbg,timeSinceMeal);
-        individualScores[0] = scores[1];
-        individualScores[1] = scores[2];
-        individualScores[2] = scores[3];
-        individualScores[3] = scores[4];
+        // set individual scores
+        indScores[0] = scores[0];
+        indScores[1] = scores[1];
+        indScores[2] = scores[2];
+        indScores[3] = scores[3];
+        // check if first recording and set flag
         if (mediScore!=-1) {
-            flag = ChronoUnit.HOURS.between(prevTime, LocalDateTime.now()) <= 24 && (scores[0] - mediScore) > 2;
+            flag = ChronoUnit.HOURS.between(prevTime, LocalDateTime.now()) <= 24 && (scores[4] - mediScore) > 2;
         }
+        // set recording time to current time
         this.prevTime = LocalDateTime.now();
-        mediScore =scores[0];
+        // set mediscore
+        mediScore =scores[4];
     }
 
     public void setRespRate(int respRate) {
@@ -98,6 +117,9 @@ public class Patient {
         }
     }
 
+    public int[] getScores(){
+        return new int[]{respType.value,consciousnessType.value,indScores[0],indScores[1],indScores[2],indScores[3],mediScore};
+    }
 
     @Override
     public String toString() {
@@ -107,10 +129,10 @@ public class Patient {
         }
         return "\n\nRespiration\nObservation: "+respType.type+"\nScore: "+respType.value+
                 "\n\nConsciousness\nObservation: "+consciousnessType.type+"\nScore: "+consciousnessType.value+
-                "\n\nRespiration Rate\nObservation: "+respRate+"\nScore: "+individualScores[0]+
-                "\n\nTemperature\nObservation: "+temp+"\nScore: "+individualScores[1]+
-                "\n\nSpO2\nObservation: "+spo2+"\nScore: "+individualScores[2]+
-                "\n\nCBG\nObservation: "+cbg+"\nScore: "+individualScores[3]+
+                "\n\nRespiration Rate\nObservation: "+respRate+"\nScore: "+ indScores[0]+
+                "\n\nSpO2\nObservation: "+spo2+"\nScore: "+ indScores[1]+
+                "\n\nTemperature\nObservation: "+temp+"\nScore: "+ indScores[2]+
+                "\n\nCBG\nObservation: "+cbg+"\nScore: "+ indScores[3]+
                 "\n\nThe patient's final Medi score is "+ mediScore +warning;
     }
 
