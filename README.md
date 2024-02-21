@@ -21,5 +21,3 @@ However, I decided that I liked the automation/convenience factor of this method
 This program has 2 classes, a patient class and a mediscore class (with a static method, which will be used for the calculations). The patient class also has a toString method to display the patients condition, and if the patients condition is worsening.
 
 Instead of creating separate variables to store the scores of each observation, I decided to use an array, which made it easier to set the individual scores in the patient class (for use in the toString() method). 
-
-I have been considering adding a nested class which would hold score info, instead of an array. This will help in avoiding any indexing errors and make it easier to implement more features in the future. 
