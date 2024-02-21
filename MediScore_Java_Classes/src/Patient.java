@@ -1,62 +1,63 @@
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 public class Patient {
-
+    Patient(){
+    }
     public enum consciousnessTypeValue{
-        ALERT(0),
-        CVPU(3);
+        ALERT(0,"Alert"),
+        CVPU(3,"CVPU");
         private final int value;
-        consciousnessTypeValue(int value){
+        private final String type;
+        consciousnessTypeValue(int value, String type){
             this.value=value;
+            this.type=type;
         }
     }
     public enum respTypeValue{
-        AIR(0),
-        OXYGEN(2);
+        AIR(0,"Air"),
+        OXYGEN(2,"Oxygen");
         private final int value;
-        respTypeValue(int value){
+        private final String type;
+
+        respTypeValue(int value, String type){
             this.value=value;
+            this.type=type;
         }
     }
-    private int consciousnessType=0;
-    private int respType=0;
-    private int prevScore = -1;
-    private LocalDateTime currTime = LocalDateTime.now();
+    private consciousnessTypeValue consciousnessType=consciousnessTypeValue.ALERT;
+    private respTypeValue respType = respTypeValue.OXYGEN;
+    private int mediScore = -1;
     private LocalDateTime prevTime = LocalDateTime.now();
-    private int[] individualScores = {0,0,0,0,0,0};
-    private int respRate=15;
-    private int spo2=95;
-    private float temp=37.1f;
-    private float cbg=6.4f;
-    private int timeSinceMeal =0;
-    private int flag=0;
+    private final int[] individualScores = {0,0,0,0};
+    private int respRate = 0;
+    private int spo2 = 0;
+    private float temp = 0;
+    private float cbg = 0;
+    private boolean flag = false;
     public void setAll(respTypeValue rType, consciousnessTypeValue cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
-        int currResp = this.respRate;
-        int currSpo2 = this.spo2;
-        float currTemp = this.temp;
-        float currCbg = this.cbg;
-        int currTime = this.timeSinceMeal;
+        flag=false;
+        this.respType = rType;
+        this.consciousnessType = cType;
         try {
             setRespRate(respRate);
             setSpo2(spo2);
             setTemp(temp);
             setCbg(cbg);
-            setTimeSinceMeal(timeSinceMeal);
+            verifyTimeSinceMeal(timeSinceMeal);
         } catch (Exception e) {
-            setRespRate(currResp);
-            setSpo2(currSpo2);
-            setTemp(currTemp);
-            setCbg(currCbg);
-            setTimeSinceMeal(currTime);
             throw new IllegalArgumentException(e.getMessage()+" Values unchanged.");
         }
-        this.respType = rType.value;
-        this.consciousnessType=cType.value;
-        this.prevTime = this.currTime;
-        this.currTime = LocalDateTime.now();
-    }
-
-    Patient(){
+        int[] scores = MediScore.calculate(respType.value,cType.value,respRate,temp,spo2,cbg,timeSinceMeal);
+        individualScores[0] = scores[1];
+        individualScores[1] = scores[2];
+        individualScores[2] = scores[3];
+        individualScores[3] = scores[4];
+        if (mediScore!=-1) {
+            flag = ChronoUnit.HOURS.between(prevTime, LocalDateTime.now()) <= 24 && (scores[0] - mediScore) > 2;
+        }
+        this.prevTime = LocalDateTime.now();
+        mediScore =scores[0];
     }
 
     public void setRespRate(int respRate) {
@@ -91,67 +92,26 @@ public class Patient {
         }
     }
 
-    public void setTimeSinceMeal(int timeSinceMeal) {
-        if (timeSinceMeal>=0){
-            this.timeSinceMeal=timeSinceMeal;
-        } else {
+    public void verifyTimeSinceMeal(int timeSinceMeal) {
+        if (timeSinceMeal<0){
             throw new IllegalArgumentException("Time must be positive.");
         }
     }
 
-    public int getPrevScore() {
-        return prevScore;
-    }
-    public void setScore(int score) {
-        this.prevScore = score;
-    }
-    public LocalDateTime getPrevTime() {
-        return prevTime;
-    }
-    public LocalDateTime getCurrTime(){
-        return currTime;
-    }
-
-    public int getConsciousnessType() {
-        return consciousnessType;
-    }
-    public int getRespType() {
-        return respType;
-    }
-    public int getRespRate() {
-        return respRate;
-    }
-    public int getSpo2() {
-        return spo2;
-    }
-    public float getTemp() {
-        return temp;
-    }
-    public float getCbg() {
-        return cbg;
-    }
-    public int getTimeSinceMeal() {
-        return timeSinceMeal;
-    }
-    public void setFlag(int flag) {
-        this.flag = flag;
-    }
-    public void setScores(int[] score){
-        individualScores=score;
-    }
 
     @Override
     public String toString() {
         String warning = "";
-        if (flag==-1){
+        if (flag){
             warning="\nThe patient's condition is worsening quickly.";
         }
-        return "\n\nRespiration\nObservation: "+respType+"\nScore: "+individualScores[0]+
-                "\n\nConsciousness\nObservation: "+consciousnessType+"\nScore: "+individualScores[1]+
-                "\n\nRespiration Rate\nObservation: "+respRate+"\nScore: "+individualScores[2]+
-                "\n\nSpO2\nObservation: "+spo2+"\nScore: "+individualScores[3]+
-                "\n\nTemperature\nObservation: "+temp+"\nScore: "+individualScores[4]+
-                "\n\nCBG\nObservation: "+cbg+"\nScore: "+individualScores[5]+
-                "\n\nThe patient's final Medi score is "+prevScore+warning;
+        return "\n\nRespiration\nObservation: "+respType.type+"\nScore: "+respType.value+
+                "\n\nConsciousness\nObservation: "+consciousnessType.type+"\nScore: "+consciousnessType.value+
+                "\n\nRespiration Rate\nObservation: "+respRate+"\nScore: "+individualScores[0]+
+                "\n\nTemperature\nObservation: "+temp+"\nScore: "+individualScores[1]+
+                "\n\nSpO2\nObservation: "+spo2+"\nScore: "+individualScores[2]+
+                "\n\nCBG\nObservation: "+cbg+"\nScore: "+individualScores[3]+
+                "\n\nThe patient's final Medi score is "+ mediScore +warning;
     }
+
 }
