@@ -34,8 +34,8 @@ public class Patient {
     private int spo2 = 0;
     private float temp = 0;
     private float cbg = 0;
-    private boolean flag = false;
-    public void setAll(int rType, int cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
+    private boolean flagged = false;
+    public int calculateMediScore(int rType, int cType, int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
         // store previous values
         respTypeValue prevRType = this.respType;
         consciousnessTypeValue prevCType = this.consciousnessType;
@@ -71,12 +71,13 @@ public class Patient {
         indScores[3] = scores[3];
         // check if first recording and set flag
         if (mediScore!=-1) {
-            flag = ChronoUnit.HOURS.between(prevTime, LocalDateTime.now()) <= 24 && (scores[4] - mediScore) > 2;
+            flagged = ChronoUnit.HOURS.between(prevTime, LocalDateTime.now()) <= 24 && (scores[4] - mediScore) > 2;
         }
         // set recording time to current time
         this.prevTime = LocalDateTime.now();
         // set mediscore
         mediScore =scores[4];
+        return mediScore;
     }
 
     public void setRespType(int rType){
@@ -134,14 +135,14 @@ public class Patient {
         }
     }
 
-    public int[] getScores(){
-        return new int[]{respType.value,consciousnessType.value,indScores[0],indScores[1],indScores[2],indScores[3],mediScore};
+    public boolean isFlagged() {
+        return flagged;
     }
 
     @Override
     public String toString() {
         String warning = "";
-        if (flag){
+        if (flagged){
             warning="\nThe patient's condition is worsening quickly.";
         }
         return "\n\nRespiration\nObservation: "+respType.type+"\nScore: "+respType.value+
