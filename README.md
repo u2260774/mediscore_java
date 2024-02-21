@@ -33,7 +33,7 @@ The patient class uses the setAll() method to take input, then uses the MediScor
 
 ### setAll(...)
 ```java
-    public void setAll(respTypeValue rType, consciousnessTypeValue cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal)
+    public int calculateMediScore(respTypeValue rType, consciousnessTypeValue cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal)
     {...}
         int[] scores = MediScore.calculate(respType.value,cType.value,respRate,temp,spo2,cbg,timeSinceMeal);
         indScores[0] = scores[0];
@@ -48,6 +48,7 @@ The patient class uses the setAll() method to take input, then uses the MediScor
         this.prevTime = LocalDateTime.now();
 
         mediScore = scores[4];
+        return mediScore;
 ```
 
 ### toString()
