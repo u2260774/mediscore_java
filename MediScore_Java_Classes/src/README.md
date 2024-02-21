@@ -36,7 +36,9 @@ public class Main {
 ```
 ### Output
 
-![java_simple output](/MediScore_Java_Classes/src/java_classes.png?raw=true)
+Output for the 'severe' patient.
+
+<img width="303" alt="java_classes" src="https://github.com/u2260774/mediscore_java/assets/126501906/b44b7dee-4774-491e-a252-e2dcc93420ba">
 
 ## Patient.java
 
