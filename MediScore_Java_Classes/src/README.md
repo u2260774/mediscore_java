@@ -1,6 +1,6 @@
 ## Main
 
-Uses the MediScore and Patient class and gives output
+Sets scores of the Patient class and gives output
 
 ```java
 import java.util.Arrays;
@@ -9,22 +9,23 @@ public class Main {
     public static void main(String[] args) {
         try {
             Patient typical = new Patient();
-            typical.setAll(Patient.respTypeValue.AIR, Patient.consciousnessTypeValue.ALERT, 15, 95, 37.1f, 6.4f, 3);
-            System.out.println(Arrays.toString(MediScore.calculate(typical)));
-
+            typical.setAll(Patient.respTypeValue.AIR, Patient.consciousnessTypeValue.ALERT, 15, 95, 37.1f, 6.4f, 0);
+            System.out.println(Arrays.toString(typical.getScores()));
+            System.out.println(typical);
             Patient moderate = new Patient();
             moderate.setAll(Patient.respTypeValue.OXYGEN, Patient.consciousnessTypeValue.ALERT, 17, 95, 37.1f, 6.4f, 0);
-            System.out.println(Arrays.toString(MediScore.calculate(moderate)));
-
+            System.out.println(Arrays.toString(moderate.getScores()));
+            System.out.println(moderate);
             Patient severe = new Patient();
             severe.setAll(Patient.respTypeValue.OXYGEN, Patient.consciousnessTypeValue.CVPU, 23, 88, 38.5f, 6.4f, 0);
-            System.out.println(Arrays.toString(MediScore.calculate(severe)));
-
+            System.out.println(Arrays.toString(severe.getScores()));
+            System.out.println(severe);
             Patient gettingWorse = new Patient();
             gettingWorse.setAll(Patient.respTypeValue.AIR, Patient.consciousnessTypeValue.ALERT, 15, 95, 37.1f, 6.4f, 0);
-            System.out.println(Arrays.toString(MediScore.calculate(gettingWorse)));
-            gettingWorse.setAll(Patient.respTypeValue.OXYGEN, Patient.consciousnessTypeValue.ALERT, 15, 95, 37.1f, 6.4f, 0);
-            System.out.println(Arrays.toString(MediScore.calculate(gettingWorse)));
+            System.out.println(Arrays.toString(gettingWorse.getScores()));
+            System.out.println(gettingWorse);
+            gettingWorse.setAll(Patient.respTypeValue.OXYGEN, Patient.consciousnessTypeValue.ALERT, 15, 95, 37.1f, 9.4f, 3);
+            System.out.println(Arrays.toString(gettingWorse.getScores()));
             System.out.println(gettingWorse);
         }
         catch (Exception e){
@@ -43,88 +44,115 @@ public class Main {
 
 ```java
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 ```
-### Class and Enums
+### Constructor and Enums
+
+I decided to add a type field to the enums for the toString() method.
 
 ```java
 public class Patient {
-
+    Patient(){
+    }
     public enum consciousnessTypeValue{
-        ALERT(0),
-        CVPU(3);
+        ALERT(0,"Alert"),
+        CVPU(3,"CVPU");
         private final int value;
-        consciousnessTypeValue(int value){
+        private final String type;
+        consciousnessTypeValue(int value, String type){
             this.value=value;
+            this.type=type;
         }
     }
     public enum respTypeValue{
-        AIR(0),
-        OXYGEN(2);
+        AIR(0,"Air"),
+        OXYGEN(2,"Oxygen");
         private final int value;
-        respTypeValue(int value){
+        private final String type;
+
+        respTypeValue(int value, String type){
             this.value=value;
+            this.type=type;
         }
     }
 ```
-### Variables
+### Default values and variables
+
+The default values have been set to those of a healthy patient, and the mediScore has been set to -1 to indicate the first reading
 
 ```java
-    private int consciousnessType=0;
-    private int respType=0;
-    private int prevScore = -1;
-    private LocalDateTime currTime = LocalDateTime.now();
+    private consciousnessTypeValue consciousnessType=consciousnessTypeValue.ALERT;
+    private respTypeValue respType = respTypeValue.AIR;
+    private int mediScore = -1;
     private LocalDateTime prevTime = LocalDateTime.now();
-    private int[] individualScores = {0,0,0,0,0,0};
-    private int respRate=15;
-    private int spo2=95;
-    private float temp=37.1f;
-    private float cbg=6.4f;
-    private int timeSinceMeal =0;
-    private int flag=0;
+    private final int[] individualScores = {0,0,0,0};
+    private int respRate = 0;
+    private int spo2 = 0;
+    private float temp = 0;
+    private float cbg = 0;
+    private boolean flag = false;
 ```
 
 ### setAll() method
+
+Takes in all the observations, Stores original values, tries to set values, calls MediScore's calculate method and checks if patient condition changed quickly
+
 ```java
-    public void setAll(respTypeValue rType, consciousnessTypeValue cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
-        int currResp = this.respRate;
-        int currSpo2 = this.spo2;
-        float currTemp = this.temp;
-        float currCbg = this.cbg;
-        int currTime = this.timeSinceMeal;
+public void setAll(respTypeValue rType, consciousnessTypeValue cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
+        // store previous values
+        respTypeValue prevRType = this.respType;
+        consciousnessTypeValue prevCType = this.consciousnessType;
+        int prevRespRate = this.respRate;
+        int prevSpo2= this.spo2;
+        float prevTemp = this.temp;
+        float prevCbg = this.cbg;
+        // begin try block to check for errors
         try {
+            this.respType = rType;
+            this.consciousnessType = cType;
             setRespRate(respRate);
             setSpo2(spo2);
             setTemp(temp);
             setCbg(cbg);
-            setTimeSinceMeal(timeSinceMeal);
+            verifyTimeSinceMeal(timeSinceMeal);
+            // catch error, reset values and return error
         } catch (Exception e) {
-            setRespRate(currResp);
-            setSpo2(currSpo2);
-            setTemp(currTemp);
-            setCbg(currCbg);
-            setTimeSinceMeal(currTime);
+            this.respType=prevRType;
+            this.consciousnessType=prevCType;
+            this.respRate=prevRespRate;
+            this.spo2=prevSpo2;
+            this.temp=prevTemp;
+            this.cbg=prevCbg;
             throw new IllegalArgumentException(e.getMessage()+" Values unchanged.");
         }
-        this.respType = rType.value;
-        this.consciousnessType=cType.value;
-        this.prevTime = this.currTime;
-        this.currTime = LocalDateTime.now();
+        // start calculations and store return
+        int[] scores = MediScore.calculate(respType.value,cType.value,respRate,temp,spo2,cbg,timeSinceMeal);
+        // set individual scores
+        indScores[0] = scores[0];
+        indScores[1] = scores[1];
+        indScores[2] = scores[2];
+        indScores[3] = scores[3];
+        // check if first recording and set flag
+        if (mediScore!=-1) {
+            flag = ChronoUnit.HOURS.between(prevTime, LocalDateTime.now()) <= 24 && (scores[4] - mediScore) > 2;
+        }
+        // set recording time to current time
+        this.prevTime = LocalDateTime.now();
+        // set mediscore
+        mediScore =scores[4];
     }
 ```
 
-### Default Constructor
-```java
-{
-   Patient(){
-    }
-```
 ### Getters and setters
+
+The setters (and verifyTimeSinceMeal()) verify inputs and send an error message accordingly. The getScore() method returns all scores, including the mediscore, in an array.
+
 ```java
-            public void setRespRate(int respRate) {
+           public void setRespRate(int respRate) {
         if (respRate>=0){
             this.respRate=respRate;
         } else {
-            throw new IllegalArgumentException("Respiration Rate must be in range 0-100.");
+            throw new IllegalArgumentException("Respiration Rate must be in positive digits.");
         }
     }
 
@@ -146,195 +174,126 @@ public class Patient {
 
     public void setCbg(float cbg) {
         if (cbg>=0){
-            this.cbg=cbg;
+            this.cbg=(float) (Math.round(cbg * 10.0) / 10.0);
         } else {
             throw new IllegalArgumentException("CBG must be positive.");
         }
     }
 
-    public void setTimeSinceMeal(int timeSinceMeal) {
-        if (timeSinceMeal>=0){
-            this.timeSinceMeal=timeSinceMeal;
-        } else {
+    public void verifyTimeSinceMeal(int timeSinceMeal) {
+        if (timeSinceMeal<0){
             throw new IllegalArgumentException("Time must be positive.");
         }
     }
 
-    public int getPrevScore() {
-        return prevScore;
-    }
-    public void setScore(int score) {
-        this.prevScore = score;
-    }
-    public LocalDateTime getPrevTime() {
-        return prevTime;
-    }
-    public LocalDateTime getCurrTime(){
-        return currTime;
-    }
-
-    public int getConsciousnessType() {
-        return consciousnessType;
-    }
-    public int getRespType() {
-        return respType;
-    }
-    public int getRespRate() {
-        return respRate;
-    }
-    public int getSpo2() {
-        return spo2;
-    }
-    public float getTemp() {
-        return temp;
-    }
-    public float getCbg() {
-        return cbg;
-    }
-    public int getTimeSinceMeal() {
-        return timeSinceMeal;
-    }
-    public void setFlag(int flag) {
-        this.flag = flag;
-    }
-    public void setScores(int[] score){
-        individualScores=score;
+    public int[] getScores(){
+        return new int[]{respType.value,consciousnessType.value,indScores[0],indScores[1],indScores[2],indScores[3],mediScore};
     }
 ```
 ### toString() method
+
+Displays all scores, along with a warning if the patients condition is worsening using the flag.
+
 ```java
-  @Override
+   @Override
     public String toString() {
         String warning = "";
-        if (flag==-1){
+        if (flag){
             warning="\nThe patient's condition is worsening quickly.";
         }
-        return "\n\nRespiration\nObservation: "+respType+"\nScore: "+individualScores[0]+
-                "\n\nConsciousness\nObservation: "+consciousnessType+"\nScore: "+individualScores[1]+
-                "\n\nRespiration Rate\nObservation: "+respRate+"\nScore: "+individualScores[2]+
-                "\n\nSpO2\nObservation: "+spo2+"\nScore: "+individualScores[3]+
-                "\n\nTemperature\nObservation: "+temp+"\nScore: "+individualScores[4]+
-                "\n\nCBG\nObservation: "+cbg+"\nScore: "+individualScores[5]+
-                "\n\nThe patient's final Medi score is "+prevScore+warning;
+        return "\n\nRespiration\nObservation: "+respType.type+"\nScore: "+respType.value+
+                "\n\nConsciousness\nObservation: "+consciousnessType.type+"\nScore: "+consciousnessType.value+
+                "\n\nRespiration Rate\nObservation: "+respRate+"\nScore: "+ indScores[0]+
+                "\n\nSpO2\nObservation: "+spo2+"\nScore: "+ indScores[1]+
+                "\n\nTemperature\nObservation: "+temp+"\nScore: "+ indScores[2]+
+                "\n\nCBG\nObservation: "+cbg+"\nScore: "+ indScores[3]+
+                "\n\nThe patient's final Medi score is "+ mediScore +warning;
     }
 ```
 
 ## MediScore.java
 
-### Imports
-
-```java
-import java.time.temporal.ChronoUnit;
-```
-
 ### Class, Method and Variables
+
+This has cbgScore and tempScore variables since those inputs are floats and the scores need to be ints.
+
 ```java
 public class MediScore {
-    public int[] calculate(Patient p){
-        int mediScore = 0;
-        int respType = p.getRespType();
-        int respRate = p.getRespRate();
-        int consciousness = p.getConsciousnessType();
-        float temp = p.getTemp();
-        int spo2 = p.getSpo2();
-        float cbg = p.getCbg();
-        int timeSinceMeal = p.getTimeSinceMeal();
-        int prevScore = p.getPrevScore();
-        int flag = 0;
-        int[] scores = {0,0,0,0,0,0};
+    public static int[] calculate(int respType, int conscType, int respRate, float temp, int spo2, float cbg, int timeSinceMeal){
+        int cbgScore = 0;
+        int tempScore = 0;
 ```
-### Inserting respiration and consciousness into the scores array
+### Calculating the respiration rate score
 ```java
-            //Set consciousness and respiration type
-            scores[0]=respType;
-            scores[1]=consciousness;
-```
-### Inserting Respiration Rate score
-```java
-            //Set respiration rate score
+           //Set respiration rate score
             if (respRate<=8 || respRate>=25){
-                scores[2] = 3;
-            } else if (respRate>20){
-                scores[2] = 2;
-            } else if (respRate<12) {
-                scores[2] = 1;
+                respRate = 3;
+            } else if (respRate<=11){
+                respRate = 1;
+            } else if (respRate>=21) {
+                respRate = 2;
+            } else{
+                respRate = 0;
             }
 ```
-### Inserting SpO2 score increase in score over time
+### Calculating the SpO2 score
 ```java
-        if (spo2 <= 83) {
-                scores[3] = 3;
+            //Set spo2 score
+            if (spo2 <= 83) {
+                spo2 = 3;
             } else if (spo2 <= 85) {
-                scores[3]= 2;
+                spo2 = 2;
             } else if (spo2 <= 87) {
-                scores[3]= 1;
-            } else {
+                spo2 = 1;
                 //Check if on oxygen
-                if (respType != 0 && spo2>92) {
-                    if (spo2 <= 94) {
-                        scores[3]= 1;
-                    } else if (spo2 <= 96) {
-                        scores[3]= 2;
-                    } else {
-                        scores[3]= 3;
-                    }
+            } else if (spo2 <=92 || respType == 0) {
+                spo2 = 0;
+            } else {
+                if (spo2<=94){
+                    spo2=1;
+                } else if (spo2<=96) {
+                    spo2=2;
+                } else {
+                    spo2=3;
                 }
             }
 ```
-### Inserting temperature score
+### Calculating temperature score
 ```java
             //Set temperature score
             if (temp<=35.0){
-                scores[4]= 3;
-            } else if ((temp<35.0 && temp<=36.0) || (temp<=39.0 && temp > 38.0)){
-                scores[4]= 1;
+                tempScore= 3;
+            } else if (temp<=36.0){
+                tempScore= 1;
             } else if (temp>=39.1) {
-                scores[4]= 2;
+                tempScore=2;
+            } else if (temp>=38.1) {
+                tempScore=1;
             }
 ```
-### Inserting CBG score
+### Calculating cbg score
 ```java
+            //Set CBG score, Check if fasting
             if (timeSinceMeal>2){
                 if(cbg<=3.4||cbg>=6.0){
-                    scores[5]= 3;
+                    cbgScore= 3;
                 } else if ((cbg<=3.9)||(cbg>=5.5)){
-                    scores[5]= 2;
+                    cbgScore= 2;
                 }
             } else if (timeSinceMeal>0) {
                 if(cbg<=4.4||cbg>=9.0){
-                    scores[5]= 3;
+                    cbgScore= 3;
                 } else if ((cbg>=4.5)||(cbg>=7.9)) {
-                    scores[5]= 2;
+                    cbgScore= 2;
                 }
             }
 ```
-### Adding scores
+### Adding scores and returning in an array
 ```java
-        for (int i : scores){
-            mediScore+=i;
-        }
-```
-### Comparing to previous score
-```java
-       //Check if previous score is set
-        if (prevScore!=-1){
-            if (mediScore-prevScore>=2) {
-                if (ChronoUnit.HOURS.between(p.getPrevTime(), p.getCurrTime()) <= 24) {
-                    flag = -1;
-                }
-            }
-        }
-```
-### Setting patient variables and returning
-```java
-        //set patient scores
-        p.setScores(scores);
-        //raise flag
-        p.setFlag(flag);
-        //set final mediscore
-        p.setScore(mediScore);
-        //return mediscore and flag
-        return new int[]{mediScore,flag};
+        int mediScore = respType+conscType+respRate+tempScore+spo2+cbgScore;
+
+        //return mediscore and individual scores
+        return new int[]{respRate,spo2,tempScore,cbgScore,mediScore};
     }
 }
 ```
