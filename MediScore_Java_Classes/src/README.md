@@ -100,7 +100,7 @@ The default values have been set to those of a healthy patient, and the mediScor
 Takes in all the observations, Stores original values, tries to set values, calls MediScore's calculate method and checks if patient condition changed quickly
 
 ```java
-public void setAll(respTypeValue rType, consciousnessTypeValue cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
+public void setAll(int rType, int cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
         // store previous values
         respTypeValue prevRType = this.respType;
         consciousnessTypeValue prevCType = this.consciousnessType;
@@ -150,6 +150,22 @@ public void setAll(respTypeValue rType, consciousnessTypeValue cType,int respRat
 The setters (and verifyTimeSinceMeal()) verify inputs and send an error message accordingly. The getScore() method returns all scores, including the mediscore, in an array.
 
 ```java
+    public void setRespType(int rType){
+        if (rType==0){
+            this.respType=respTypeValue.AIR;
+        } else if (rType==2) {
+            this.respType=respTypeValue.OXYGEN;
+        } else {
+            throw new IllegalArgumentException("Respiration type must be either Air(0) or Oxygen(2).");
+        }
+    }
+    public void setConsciousnessType(int cType){
+        if (cType==0){
+            this.consciousnessType=consciousnessTypeValue.ALERT;
+        } else {
+            this.consciousnessType=consciousnessTypeValue.CVPU;
+        }
+    }
            public void setRespRate(int respRate) {
         if (respRate>=0){
             this.respRate=respRate;
