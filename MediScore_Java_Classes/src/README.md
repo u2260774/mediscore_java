@@ -110,8 +110,8 @@ public void setAll(respTypeValue rType, consciousnessTypeValue cType,int respRat
         float prevCbg = this.cbg;
         // begin try block to check for errors
         try {
-            this.respType = rType;
-            this.consciousnessType = cType;
+            setRespType(rType);
+            setConsciousnessType(cType);
             setRespRate(respRate);
             setSpo2(spo2);
             setTemp(temp);
