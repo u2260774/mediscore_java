@@ -3,29 +3,23 @@
 Sets scores of the Patient class and gives output
 
 ```java
-import java.util.Arrays;
-
 public class Main {
     public static void main(String[] args) {
         try {
             Patient typical = new Patient();
-            typical.setAll(0, 0, 15, 95, 37.1f, 6.4f, 0);
-            System.out.println(Arrays.toString(typical.getScores()));
-            System.out.println(typical);
+            System.out.println(typical.calculateMediScore(0, 0, 15, 95, 37.1f, 6.4f, 0));
+            System.out.println(typical.isFlagged());
             Patient moderate = new Patient();
-            moderate.setAll(2, 0, 17, 95, 37.1f, 6.4f, 0);
-            System.out.println(Arrays.toString(moderate.getScores()));
-            System.out.println(moderate);
+            System.out.println(moderate.calculateMediScore(2, 0, 17, 95, 37.1f, 6.4f, 0));
+            System.out.println(moderate.isFlagged());
             Patient severe = new Patient();
-            severe.setAll(2, 1, 23, 88, 38.5f, 6.4f, 0);
-            System.out.println(Arrays.toString(severe.getScores()));
-            System.out.println(severe);
+            System.out.println(severe.calculateMediScore(2, 1, 23, 88, 38.5f, 6.4f, 0));
+            System.out.println(severe.isFlagged());
             Patient gettingWorse = new Patient();
-            gettingWorse.setAll(0, 0, 15, 95, 37.1f, 6.4f, 0);
-            System.out.println(Arrays.toString(gettingWorse.getScores()));
-            System.out.println(gettingWorse);
-            gettingWorse.setAll(2, 0, 15, 95, 37.1f, 9.4f, 3);
-            System.out.println(Arrays.toString(gettingWorse.getScores()));
+            System.out.println(gettingWorse.calculateMediScore(0, 0, 15, 95, 37.1f, 6.4f, 0));
+            System.out.println(gettingWorse.isFlagged());
+            System.out.println(gettingWorse.calculateMediScore(2, 0, 15, 95, 37.1f, 9.4f, 3));
+            System.out.println(gettingWorse.isFlagged());
             System.out.println(gettingWorse);
         }
         catch (Exception e){
@@ -36,9 +30,10 @@ public class Main {
 ```
 ### Output
 
-Output for the 'severe' patient.
+Output for the 'gettingWorse' patient.
 
-<img width="226" alt="java_classes" src="https://github.com/u2260774/mediscore_java/assets/126501906/420e1caa-efc0-491a-a3b5-afd3ae0bb7c9">
+![image](https://github.com/u2260774/mediscore_java/assets/126501906/cc6639a4-b129-43d5-a181-eda20b123e96)
+
 
 ## Patient.java
 
@@ -95,12 +90,12 @@ The default values have been set to those of a healthy patient, and the mediScor
     private boolean flag = false;
 ```
 
-### setAll() method
+### calculateMediScore() method
 
 Takes in all the observations, Stores original values, tries to set values, calls MediScore's calculate method and checks if patient condition changed quickly
 
 ```java
-public void setAll(int rType, int cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
+public int calculateMediScore(int rType, int cType, int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
         // store previous values
         respTypeValue prevRType = this.respType;
         consciousnessTypeValue prevCType = this.consciousnessType;
@@ -128,7 +123,7 @@ public void setAll(int rType, int cType,int respRate, int spo2, float temp, floa
             throw new IllegalArgumentException(e.getMessage()+" Values unchanged.");
         }
         // start calculations and store return
-        int[] scores = MediScore.calculate(respType.value,cType.value,respRate,temp,spo2,cbg,timeSinceMeal);
+        int[] scores = MediScore.calculate(respType.value, consciousnessType.value, respRate,temp,spo2,cbg,timeSinceMeal);
         // set individual scores
         indScores[0] = scores[0];
         indScores[1] = scores[1];
@@ -136,12 +131,13 @@ public void setAll(int rType, int cType,int respRate, int spo2, float temp, floa
         indScores[3] = scores[3];
         // check if first recording and set flag
         if (mediScore!=-1) {
-            flag = ChronoUnit.HOURS.between(prevTime, LocalDateTime.now()) <= 24 && (scores[4] - mediScore) > 2;
+            flagged = ChronoUnit.HOURS.between(prevTime, LocalDateTime.now()) <= 24 && (scores[4] - mediScore) > 2;
         }
         // set recording time to current time
         this.prevTime = LocalDateTime.now();
         // set mediscore
         mediScore =scores[4];
+        return mediScore;
     }
 ```
 
@@ -206,6 +202,10 @@ The setters (and verifyTimeSinceMeal()) verify inputs and send an error message 
 
     public int[] getScores(){
         return new int[]{respType.value,consciousnessType.value,indScores[0],indScores[1],indScores[2],indScores[3],mediScore};
+    }
+
+    public boolean isFlagged() {
+        return flagged;
     }
 ```
 ### toString() method
