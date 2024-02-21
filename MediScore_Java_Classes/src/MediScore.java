@@ -1,6 +1,5 @@
 public class MediScore {
     public static int[] calculate(int respType, int conscType, int respRate, float temp, int spo2, float cbg, int timeSinceMeal){
-        int mediScore;
         int cbgScore = 0;
         int tempScore = 0;
             //Set respiration rate score
@@ -60,9 +59,9 @@ public class MediScore {
             }
 
         //add up scores
-        mediScore = respType+conscType+respRate+tempScore+spo2+cbgScore;
+        int mediScore = respType+conscType+respRate+tempScore+spo2+cbgScore;
 
         //return mediscore and individual scores
-        return new int[]{mediScore,respRate,tempScore,spo2,cbgScore};
+        return new int[]{respRate,spo2,tempScore,cbgScore,mediScore};
     }
 }
