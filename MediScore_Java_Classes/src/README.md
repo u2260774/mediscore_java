@@ -38,7 +38,7 @@ public class Main {
 
 Output for the 'severe' patient.
 
-<img width="303" alt="java_classes" src="https://github.com/u2260774/mediscore_java/assets/126501906/b44b7dee-4774-491e-a252-e2dcc93420ba">
+<img width="226" alt="java_classes" src="https://github.com/u2260774/mediscore_java/assets/126501906/420e1caa-efc0-491a-a3b5-afd3ae0bb7c9">
 
 ## Patient.java
 
