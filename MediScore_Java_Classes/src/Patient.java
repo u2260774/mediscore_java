@@ -64,7 +64,7 @@ public class Patient {
         if (respRate>=0){
             this.respRate=respRate;
         } else {
-            throw new IllegalArgumentException("Respiration Rate must be in range 0-100.");
+            throw new IllegalArgumentException("Respiration Rate must be in positive digits.");
         }
     }
 
@@ -86,7 +86,7 @@ public class Patient {
 
     public void setCbg(float cbg) {
         if (cbg>=0){
-            this.cbg=cbg;
+            this.cbg=(float) (Math.round(cbg * 10.0) / 10.0);
         } else {
             throw new IllegalArgumentException("CBG must be positive.");
         }
