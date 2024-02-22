@@ -7,8 +7,8 @@ public class Patient {
     public enum consciousnessTypeValue{
         ALERT(0,"Alert"),
         CVPU(3,"CVPU");
-        private final int value;
-        private final String type;
+        final int value;
+        final String type;
         consciousnessTypeValue(int value, String type){
             this.value=value;
             this.type=type;
@@ -17,8 +17,8 @@ public class Patient {
     public enum respTypeValue{
         AIR(0,"Air"),
         OXYGEN(2,"Oxygen");
-        private final int value;
-        private final String type;
+        final int value;
+        final String type;
 
         respTypeValue(int value, String type){
             this.value=value;
