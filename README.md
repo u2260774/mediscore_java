@@ -6,7 +6,7 @@ The portal specified that the input type for respiration and consciousness need 
 
 First, I assumed that it meant the input would be an enum with an integer value, however, the CVPU comment said "non-zero if CVPU". This made me think that the input would be an integer (since enums are a 'set of predefined constants', and 'non-zero' is a set with infinite elements), and the function would use the enum values that were created to assign scores. However, doing so would make the enums redundant, since this could be done with if statements instead of enums.
 
-I decided to use enums as the input for MediScore_Java_Simple, and integers as the input for MediScore_Java_Classes. I kept the enum classes in the code for the 'type' String that I used in the toString() method.
+I decided to use enums as the input for MediScore_Java_Simple, and integers as the input for MediScore_Java_Classes. I kept the enum classes in the code for the 'type' variable that I used in the toString() method.
 
 ## MediScore_Java_Simple
 
