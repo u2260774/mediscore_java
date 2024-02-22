@@ -8,6 +8,12 @@ First, I assumed that it meant the input would be an enum with an integer value,
 
 I decided to use enums as the input for MediScore_Java_Simple, and integers as the input for MediScore_Java_Classes. I kept the enum classes in the code for the 'type' variable that I used in the toString() method.
 
+## Issue with the table
+
+Score 3 for '2 hours after eating' says "4.5 and below", and Score 2 says "4.5-5.8". I made the assumption that Score 3 was supposed to say "4.4 and below", similar to the row for 'When Fasting'.
+
+![image](https://github.com/u2260774/mediScore-Aire/assets/126501906/11020b1a-a0a1-4df0-8aa7-20cbcfaec355)
+
 ## MediScore_Java_Simple
 
 This solution uses a single class with a method that takes the observations and uses LocalDateTime and ChronoUnit to measure the time between observations. It only returns the mediscore and the flag. I first considered making a patient class that would have the methods needed to compute the medi score. 
