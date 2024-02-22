@@ -32,16 +32,17 @@ The MediScore class has a static calculate() method which takes input and conver
 
 ### MediScore.calculate(...)
 ```java
-    public static int[] calculate(int respType, int conscType, int respRate, float temp, int spo2, float cbg, int timeSinceMeal)
+    public static int[] calculate(int respType, int conscType, int respRate, float temp, int spo2, float cbg, int timeSinceMeal){
     {...}
     return new int[]{respRate,spo2,tempScore,cbgScore,mediScore};
+}
 ```
 
-The patient class uses the setAll() method to take input, then uses the MediScore.calculate() method to get the scores, check how the patients condition changed, and stores the individual scores in an array and the mediscore in a variable. The patient class also has a toString() method to display the patients condition, and if the patients condition is worsening.
+The patient class uses the calculateMediScore() method to take input, then uses the MediScore.calculate() method to get the scores, check how the patients condition changed, and stores the individual scores in an array and the mediscore in a variable. The patient class also has a toString() method to display the patients condition, and a isFlagged() method to display if the patients condition is worsening quickly.
 
-### setAll(...)
+### calculateMediScore(...)
 ```java
-    public int calculateMediScore(respTypeValue rType, consciousnessTypeValue cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal)
+    public int calculateMediScore(respTypeValue rType, consciousnessTypeValue cType,int respRate, int spo2, float temp, float cbg, int timeSinceMeal){
     {...}
         int[] scores = MediScore.calculate(respType.value,cType.value,respRate,temp,spo2,cbg,timeSinceMeal);
         indScores[0] = scores[0];
@@ -57,6 +58,7 @@ The patient class uses the setAll() method to take input, then uses the MediScor
 
         mediScore = scores[4];
         return mediScore;
+}
 ```
 
 ### toString()
