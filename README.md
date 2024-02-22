@@ -1,6 +1,6 @@
 # Solution in Java
 
-## Issue with Enums
+## Question about the Enums
 
 The portal specified that the input type for respiration and consciousness need to be Enums in the form of an Integer. I was not sure if the input itself was going to be an integer or if the enums needed an integer value assigned to them. 
 
